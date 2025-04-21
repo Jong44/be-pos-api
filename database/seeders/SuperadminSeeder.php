@@ -45,6 +45,8 @@ class SuperAdminSeeder extends Seeder
             "view activity logs"
         ];
 
+        // guard nya pakai api
+
         foreach ($permissions as $permission) {
             Permission::firstOrCreate(["name" => $permission]);
         }

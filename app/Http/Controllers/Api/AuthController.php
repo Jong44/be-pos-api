@@ -5,9 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Resources\UserResource;
-use App\Repositories\Interfaces\AuthRepositoryInterface;
-use App\Services\AuthService;
-use Illuminate\Http\Request;
+
 use Illuminate\Support\Facades\Auth;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
@@ -25,7 +23,7 @@ class AuthController extends Controller
                 $user = Auth::user();
                 $token = JWTAuth::fromUser($user);
                 return response()->json([
-                    'user' => new UserResource($user),
+                    'user' => $user,
                     'token' => $token,
                 ] , 200);
                 } else {

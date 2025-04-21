@@ -25,6 +25,7 @@ class User extends Authenticatable implements JWTSubject
         'username',
         'email',
         'password',
+        'outlet_id',
     ];
 
     // foreign key

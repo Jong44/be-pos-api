@@ -10,12 +10,12 @@ class Outlet extends Model
     use HasUuid;
 
     protected $fillable = [
-        'name',
+        'outlet_name',
         'address',
-        'phone',
+        'phone_number',
         'email',
         'latitude',
         'longitude',
-        'status',
+        'tax',
     ];
 }

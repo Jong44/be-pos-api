@@ -1,6 +1,9 @@
 <?php
 
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\OutletController;
+use App\Http\Controllers\Api\RoleController;
+use App\Http\Controllers\Api\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -14,6 +17,11 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::middleware('auth:api')->group(function () {
     // Protected routes go here
     // Example: Route::get('user', [UserController::class, 'index']);
-    return response()->json(['message' => 'Protected route is working!']);
+    // outlet change to resource
+    Route::resource('outlets', OutletController::class);
+    Route::resource('roles', RoleController::class);
+    Route::resource('users', UserController::class);
+    Route::get('permissions', [RoleController::class, 'indexPermission']);
+
 });
 
