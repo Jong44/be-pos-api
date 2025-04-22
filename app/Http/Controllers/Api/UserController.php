@@ -18,7 +18,7 @@ class UserController extends Controller
             return response()->json(['message' => 'You are not authorized to access this resource'], 403);
         }
 
-        $users = User::all();
+        $users = User::with('outlet')->get();
 
         if ($users->isEmpty()) {
             return response()->json(['message' => 'No users found'], 404);
@@ -48,14 +48,10 @@ class UserController extends Controller
 
         $validatedData = $request->validated();
         $validatedData['password'] = bcrypt($validatedData['password']);
-        $validatedData['outlet_id'] = $request->input('outlet_id', null); // Set to null if not provided
         $user = User::create($validatedData);
         $user->assignRole($validatedData['role']);
-        // Attach outlet role if outlet_id is provided
-        if ($validatedData['outlet_id']) {
-            $user->outlet()->attach($validatedData['outlet_id']);
-        }
         return response()->json(['message' => 'User created successfully', 'user' => $user], 201);
+
     }
 
     /**
@@ -63,7 +59,34 @@ class UserController extends Controller
      */
     public function show(string $id)
     {
-        //
+        if (!auth()->user()->hasRole('superadmin')) {
+            return response()->json(['message' => 'You are not authorized to access this resource'], 403);
+        }
+
+        $user = User::with('outlet')->find($id);
+
+        if (!$user) {
+            return response()->json(['message' => 'User not found'], 404);
+        }
+
+        return response()->json([
+            'users' => $user,
+            'message' => 'Users fetched successfully',
+        ], 200);
+    }
+
+    public function showCurrentUser()
+    {
+        $user = auth()->user()->load('outlet');
+
+        if (!$user) {
+            return response()->json(['message' => 'User not found'], 404);
+        }
+
+        return response()->json([
+            'user' => $user,
+            'message' => 'User fetched successfully',
+        ], 200);
     }
 
     /**
@@ -79,7 +102,43 @@ class UserController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+
+        $user = User::find($id);
+
+        if (!$user) {
+            return response()->json(['message' => 'User not found'], 404);
+        }
+
+        if (!auth()->user()->hasRole('superadmin') || $user->id !== auth()->user()->id) {
+            return response()->json(['message' => 'You are not authorized to access this resource'], 403);
+        }
+        $validatedData = $request->validate([
+            'username' => 'sometimes|required|string|max:255',
+            'email' => 'sometimes|required|string|email|max:255|unique:users,email,' . $user->id,
+            'password' => 'sometimes|required|string|min:8|confirmed',
+            'role' => 'sometimes|required|string',
+            'outlet_id' => 'sometimes|nullable|exists:outlets,id',
+        ]);
+        if ($request->has('password')) {
+            $validatedData['password'] = bcrypt($validatedData['password']);
+        } else {
+            unset($validatedData['password']);
+        }
+        if ($request->has('role')) {
+            $user->syncRoles($validatedData['role']);
+        }
+        if ($request->has('outlet_id')) {
+            $user->outlet_id = $validatedData['outlet_id'];
+        }
+        $user->username = $validatedData['username'];
+        if ($request->has('email')) {
+            $user->email = $validatedData['email'];
+        }
+        if ($request->has('password')) {
+            $user->password = $validatedData['password'];
+        }
+        $user->save();
+        return response()->json(['message' => 'User updated successfully', 'user' => $user], 200);
     }
 
     /**
@@ -87,6 +146,18 @@ class UserController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        if (!auth()->user()->hasRole('superadmin')) {
+            return response()->json(['message' => 'You are not authorized to access this resource'], 403);
+        }
+
+        $user = User::find($id);
+
+        if (!$user) {
+            return response()->json(['message' => 'User not found'], 404);
+        }
+
+        $user->delete();
+
+        return response()->json(['message' => 'User deleted successfully'], 200);
     }
 }
