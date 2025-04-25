@@ -13,9 +13,6 @@ class AuthController extends Controller
 {
     public function login(LoginRequest $request)
     {
-
-
-
         $credentials = $request->validated();
 
         try {
@@ -32,6 +29,16 @@ class AuthController extends Controller
 
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 401);
+        }
+    }
+
+    public function logout()
+    {
+        try {
+            JWTAuth::invalidate(JWTAuth::getToken());
+            return response()->json(['message' => 'Successfully logged out'], 200);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Failed to log out'], 500);
         }
     }
 }

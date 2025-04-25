@@ -6,10 +6,12 @@ use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Validation\ValidationException;
+use Spatie\Permission\Exceptions\UnauthorizedException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Tymon\JWTAuth\Exceptions\JWTException;
 use Tymon\JWTAuth\Exceptions\TokenExpiredException;
 use Tymon\JWTAuth\Exceptions\TokenInvalidException;
+
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -17,7 +19,10 @@ return Application::configure(basePath: dirname(__DIR__))
         apiPrefix: 'api',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        // Middleware setup if needed
+        $middleware->alias([
+            'role' => \Spatie\Permission\Middleware\RoleMiddleware::class,
+            'permission' => \Spatie\Permission\Middleware\PermissionMiddleware::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         $exceptions->renderable(function (ModelNotFoundException $e, $request) {
@@ -77,6 +82,16 @@ return Application::configure(basePath: dirname(__DIR__))
             ], 401);
         });
 
+        // role middleware
+        $exceptions->renderable(function (UnauthorizedException $e, $request) {
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Role Denied',
+                ], 403);
+            }
+        });
+
         $exceptions->renderable(function (\Throwable $e, $request) {
             if ($request->expectsJson()) {
                 return response()->json([
@@ -86,5 +101,8 @@ return Application::configure(basePath: dirname(__DIR__))
                 ], 500);
             }
         });
+
+
+
     })
     ->create();

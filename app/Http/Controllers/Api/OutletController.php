@@ -16,9 +16,7 @@ class OutletController extends Controller
      */
     public function index()
     {
-        if (!auth()->user()->hasRole('superadmin')) {
-            return response()->json(['message' => 'You are not authorized to access this resource'], 403);
-        }
+
         // Get all outlets
         try{
             $outlets = Outlet::all();
@@ -48,9 +46,6 @@ class OutletController extends Controller
      */
     public function store(OutletRequest $request)
     {
-        if (!auth()->user()->hasRole('superadmin')) {
-            return response()->json(['message' => 'You are not authorized to access this resource'], 403);
-        }
         // Create a new outlet
         $outlet = Outlet::create($request->validated());
 
@@ -91,9 +86,6 @@ class OutletController extends Controller
      */
     public function update(OutletRequest $request, string $id)
     {
-        if (!auth()->user()->hasRole('superadmin')) {
-            return response()->json(['message' => 'You are not authorized to access this resource'], 403);
-        }
         // Update the outlet
         $outlet = Outlet::find($id);
 
@@ -111,9 +103,6 @@ class OutletController extends Controller
      */
     public function destroy(string $id)
     {
-        if (!auth()->user()->hasRole('superadmin')) {
-            return response()->json(['message' => 'You are not authorized to access this resource'], 403);
-        }
         // Delete the outlet
         $outlet = Outlet::find($id);
 
