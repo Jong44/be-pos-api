@@ -5,18 +5,17 @@ namespace App\Models;
 use App\HasUuid;
 use Illuminate\Database\Eloquent\Model;
 
-class Category extends Model
+class PaymentMethod extends Model
 {
     use HasUuid;
 
     protected $fillable = [
-        'name',
         'outlet_id',
+        'name',
     ];
 
-    public function products()
+    public function outlet()
     {
-        return $this->hasMany(Product::class);
+        return $this->belongsTo(Outlet::class);
     }
-
 }

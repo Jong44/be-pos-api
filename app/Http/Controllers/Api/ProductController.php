@@ -12,11 +12,9 @@ class ProductController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(string $outlet_id)
     {
-
-        $products = Product::all();
-
+        $products = Product::where('outlet_id', $outlet_id)->get();
         if ($products->isEmpty()) {
             return response()->json(['message' => 'No products found'], 404);
         }
@@ -31,9 +29,11 @@ class ProductController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(ProductRequest $request)
+    public function store(ProductRequest $request, string $outlet_id)
     {
         $validatedData = $request->validated();
+
+        $validatedData['outlet_id'] = $outlet_id;
 
         // Create a new product
         $product = Product::create($validatedData);

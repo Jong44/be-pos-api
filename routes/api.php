@@ -6,6 +6,8 @@ use App\Http\Controllers\Api\OutletController;
 use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\RoleController;
 use App\Http\Controllers\Api\UserController;
+use App\Http\Controllers\Api\VoucherController;
+use App\Http\Controllers\PaymentMethodController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -85,6 +87,38 @@ Route::middleware('auth:api')->group(function () {
             });
             Route::middleware('permission:delete categories')->group(function () {
                 Route::delete('/{category}', [CategoryController::class, 'destroy']);
+            });
+        });
+
+        Route::prefix('vouchers')->group(function () {
+            Route::middleware('permission:view vouchers')->group(function () {
+                Route::get('/', [VoucherController::class, 'index']);
+                Route::get('/{voucher}', [VoucherController::class, 'show']);
+            });
+            Route::middleware('permission:create vouchers')->group(function () {
+                Route::post('/', [VoucherController::class, 'store']);
+            });
+            Route::middleware('permission:update vouchers')->group(function () {
+                Route::put('/{voucher}', [VoucherController::class, 'update']);
+            });
+            Route::middleware('permission:delete vouchers')->group(function () {
+                Route::delete('/{voucher}', [VoucherController::class, 'destroy']);
+            });
+        });
+
+        Route::prefix('payment-methods')->group(function () {
+            Route::middleware('permission:view payment methods')->group(function () {
+                Route::get('/', [PaymentMethodController::class, 'index']);
+                Route::get('/{payment_method}', [PaymentMethodController::class, 'show']);
+            });
+            Route::middleware('permission:create payment methods')->group(function () {
+                Route::post('/', [PaymentMethodController::class, 'store']);
+            });
+            Route::middleware('permission:update payment methods')->group(function () {
+                Route::put('/{payment_method}', [PaymentMethodController::class, 'update']);
+            });
+            Route::middleware('permission:delete payment methods')->group(function () {
+                Route::delete('/{payment_method}', [PaymentMethodController::class, 'destroy']);
             });
         });
     });

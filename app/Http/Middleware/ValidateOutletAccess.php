@@ -28,11 +28,18 @@ class ValidateOutletAccess
         }
 
         $user = auth()->user();
-        if ($user->role != 'superadmin' || $user->outlet_id != $outletId) {
-            return response()->json(['message' => 'Outlet ID does not match'], 403);
+
+        if($user->outlet_id != $outletId){
+            if ($user->getRoleNames()[0] == 'superadmin' ) {
+                return $next($request);
+            }
+            return response()->json(['message' => 'You do not have access to this outlet', 'role' => $user->getRoleNames()[0]], 403);
         }
 
         return $next($request);
+
+
+
 
 
     }

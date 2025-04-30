@@ -8,6 +8,7 @@ use App\HasUuid;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Collection;
 use Spatie\Permission\Traits\HasRoles;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 
@@ -32,6 +33,11 @@ class User extends Authenticatable implements JWTSubject
     public function outlet()
     {
         return $this->belongsTo(Outlet::class);
+    }
+
+    public function getRoleNames(): Collection
+    {
+        return $this->roles->pluck('name');
     }
 
 
