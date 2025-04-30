@@ -19,7 +19,7 @@ return new class extends Migration
             $table->integer('stock')->default(0);
             $table->boolean('is_non_stock')->default(false);
             $table->double('initial_price')->default(0);
-            $table->double('price')->default(0);
+            $table->double('selling_price')->default(0);
             $table->string('unit')->default('pcs');
             $table->text('hero_images')->nullable();
             $table->timestamps();

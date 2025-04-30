@@ -52,37 +52,44 @@ Route::middleware('auth:api')->group(function () {
     Route::get('outlets/{outlet}', [OutletController::class, 'show']);
     Route::get('user/current', [UserController::class, 'showCurrentUser']);
 
-    Route::prefix('products')->group(function () {
-        Route::middleware('permission:view products')->group(function () {
-            Route::get('/', [ProductController::class, 'index']);
-            Route::get('/{product}', [ProductController::class, 'show']);
+    Route::group([
+        'prefix' => 'outlets/{outlet_id}',
+        'middleware' => 'validate.outlet.access:outlet_id',
+    ], function () {
+        Route::prefix('products')->group(function () {
+            Route::middleware('permission:view products')->group(function () {
+                Route::get('/', [ProductController::class, 'index']);
+                Route::get('/{product}', [ProductController::class, 'show']);
+            });
+            Route::middleware('permission:create products')->group(function () {
+                Route::post('/', [ProductController::class, 'store']);
+            });
+            Route::middleware('permission:update products')->group(function () {
+                Route::put('/{product}', [ProductController::class, 'update']);
+            });
+            Route::middleware('permission:delete products')->group(function () {
+                Route::delete('/{product}', [ProductController::class, 'destroy']);
+            });
         });
-        Route::middleware('permission:create products')->group(function () {
-            Route::post('/', [ProductController::class, 'store']);
-        });
-        Route::middleware('permission:update products')->group(function () {
-            Route::put('/{product}', [ProductController::class, 'update']);
-        });
-        Route::middleware('permission:delete products')->group(function () {
-            Route::delete('/{product}', [ProductController::class, 'destroy']);
+
+        Route::prefix('categories')->group(function () {
+            Route::middleware('permission:view categories')->group(function () {
+                Route::get('/', [CategoryController::class, 'index']);
+                Route::get('/{category}', [CategoryController::class, 'show']);
+            });
+            Route::middleware('permission:create categories')->group(function () {
+                Route::post('/', [CategoryController::class, 'store']);
+            });
+            Route::middleware('permission:update categories')->group(function () {
+                Route::put('/{category}', [CategoryController::class, 'update']);
+            });
+            Route::middleware('permission:delete categories')->group(function () {
+                Route::delete('/{category}', [CategoryController::class, 'destroy']);
+            });
         });
     });
 
-    Route::prefix('categories')->group(function () {
-        Route::middleware('permission:view categories')->group(function () {
-            Route::get('/', [CategoryController::class, 'index']);
-            Route::get('/{category}', [CategoryController::class, 'show']);
-        });
-        Route::middleware('permission:create categories')->group(function () {
-            Route::post('/', [CategoryController::class, 'store']);
-        });
-        Route::middleware('permission:update categories')->group(function () {
-            Route::put('/{category}', [CategoryController::class, 'update']);
-        });
-        Route::middleware('permission:delete categories')->group(function () {
-            Route::delete('/{category}', [CategoryController::class, 'destroy']);
-        });
-    });
+
 
     Route::post('logout', [AuthController::class, 'logout']);
 

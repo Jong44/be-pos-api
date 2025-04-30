@@ -15,8 +15,9 @@ class ProductRequest extends FormRequest
     {
         return [
             'name' => 'required|string|max:255',
-            'price' => 'required|numeric|min:0',
+            'selling_price' => 'required|numeric|min:0',
             'category_id' => 'required|exists:categories,id',
+            'outlet_id' => 'required|exists:outlets,id',
             'stock' => 'nullable|integer|min:0',
             'is_non_stock' => 'nullable|boolean',
             'initial_price' => 'required|numeric|min:0',
@@ -31,9 +32,11 @@ class ProductRequest extends FormRequest
             'name.required' => 'Product name is required',
             'name.string' => 'Product name must be a string',
             'name.max' => 'Product name must not exceed 255 characters',
-            'price.required' => 'Price is required',
-            'price.numeric' => 'Price must be a number',
-            'price.min' => 'Price must be at least 0',
+            'outlet_id.required' => 'Outlet ID is required',
+            'outlet_id.exists' => 'Outlet ID must exist in the outlets table',
+            'selling_price.required' => 'Price is required',
+            'selling_price.numeric' => 'Price must be a number',
+            'prselling_priceice.min' => 'Price must be at least 0',
             'category_id.required' => 'Category ID is required',
             'category_id.exists' => 'Category ID must exist in the categories table',
             'stock.integer' => 'Stock must be an integer',
@@ -49,4 +52,6 @@ class ProductRequest extends FormRequest
 
         ];
     }
+
+
 }

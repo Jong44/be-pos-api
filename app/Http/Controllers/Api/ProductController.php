@@ -72,6 +72,7 @@ class ProductController extends Controller
      */
     public function update(Request $request, string $id)
     {
+
         $product = Product::find($id);
 
         if (!$product) {
@@ -81,7 +82,7 @@ class ProductController extends Controller
         // Validate the request data
         $validatedData = $request->validate([
             'name' => 'sometimes|required|string|max:255',
-            'price' => 'sometimes|required|numeric|min:0',
+            'selling_price' => 'sometimes|required|numeric|min:0',
             'category_id' => 'sometimes|required|exists:categories,id',
             'stock' => 'sometimes|nullable|integer|min:0',
             'is_non_stock' => 'sometimes|nullable|boolean',
@@ -104,6 +105,8 @@ class ProductController extends Controller
      */
     public function destroy(string $id)
     {
+
+        // Find the product by ID
         $product = Product::find($id);
 
         if (!$product) {

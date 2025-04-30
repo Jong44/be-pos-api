@@ -22,6 +22,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'role' => \Spatie\Permission\Middleware\RoleMiddleware::class,
             'permission' => \Spatie\Permission\Middleware\PermissionMiddleware::class,
+            'validate.outlet.access' => \App\Http\Middleware\ValidateOutletAccess::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

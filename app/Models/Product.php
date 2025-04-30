@@ -17,7 +17,7 @@ class Product extends Model
         'stock',
         'is_non_stock',
         'initial_price',
-        'price',
+        'selling_price',
         'unit',
         'hero_images'
     ];

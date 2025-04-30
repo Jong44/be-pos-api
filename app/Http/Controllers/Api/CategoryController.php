@@ -3,8 +3,9 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Outlet\CategoryRequest;
+use App\Http\Requests\Product\CategoryRequest;
 use App\Models\Category;
+use App\Models\Outlet;
 use Illuminate\Http\Request;
 
 class CategoryController extends Controller
@@ -12,10 +13,10 @@ class CategoryController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(string $outlet_id)
     {
         // Fetch all categories from the database
-        $categories = Category::all();
+        $categories = Category::where('outlet_id', $outlet_id)->get();
 
         // Check if categories are found
         if ($categories->isEmpty()) {
@@ -90,6 +91,7 @@ class CategoryController extends Controller
      */
     public function destroy(string $id)
     {
+
         $category = Category::find($id);
 
         if (!$category) {

@@ -13,13 +13,18 @@ return new class extends Migration
     {
         Schema::create('categories', function (Blueprint $table) {
             $table->uuid('id')->primary();
+            $table->uuid('outlet_id');
             $table->string('name')->unique();
             $table->timestamps();
+
+            $table->foreign('outlet_id')->references('id')->on('outlets')->onDelete('cascade');
         });
 
         Schema::table('products', function (Blueprint $table) {
             $table->foreign('category_id')->references('id')->on('categories')->onDelete('cascade');
         });
+
+
     }
 
     /**
