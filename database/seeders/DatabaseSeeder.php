@@ -18,6 +18,11 @@ class DatabaseSeeder extends Seeder
         $this->call([
             SuperAdminSeeder::class,
             // Tambahkan seeder lain di sini jika perlu
+            OutletsSeeder::class,
+            CategoriesSeeder::class,
+            ProductsSeeder::class,
+            PaymentMethodSeeder::class,
+            VouchersSeeder::class,
         ]);
     }
 }

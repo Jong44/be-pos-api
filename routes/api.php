@@ -1,13 +1,15 @@
 <?php
 
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\CartController;
 use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\OutletController;
+use App\Http\Controllers\Api\PaymentMethodController as ApiPaymentMethodController;
 use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\RoleController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\VoucherController;
-use App\Http\Controllers\PaymentMethodController;
+use App\Http\Controllers\Api\PaymentMethodController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -108,7 +110,7 @@ Route::middleware('auth:api')->group(function () {
 
         Route::prefix('payment-methods')->group(function () {
             Route::middleware('permission:view payment methods')->group(function () {
-                Route::get('/', [PaymentMethodController::class, 'index']);
+                Route::get('/', [ApiPaymentMethodController::class, 'index']);
                 Route::get('/{payment_method}', [PaymentMethodController::class, 'show']);
             });
             Route::middleware('permission:create payment methods')->group(function () {
@@ -121,6 +123,33 @@ Route::middleware('auth:api')->group(function () {
                 Route::delete('/{payment_method}', [PaymentMethodController::class, 'destroy']);
             });
         });
+
+        Route::group([
+            'prefix' => 'cart',
+            'middleware' => ['permission:create transaction', 'permission:view transactions', 'permission:view product'],
+        ], function () {
+            Route::get('/', [CartController::class, 'getCart']);
+            Route::post('/', [CartController::class, 'addProductToCart']);
+            Route::delete('/{id}', [CartController::class, 'removeProductFromCart']);
+            Route::put('/{id}', [CartController::class, 'updateCartItem']);
+        });
+
+        Route::prefix('transactions')->group(function () {
+            Route::middleware('permission:create transaction')->group(function () {
+                Route::post('/', [CartController::class, 'createTransaction']);
+            });
+            Route::middleware('permission:view transactions')->group(function () {
+                Route::get('/', [CartController::class, 'getTransactions']);
+                Route::get('/{transaction}', [CartController::class, 'getTransactionDetail']);
+            });
+            Route::middleware('permission:delete transactions')->group(function () {
+                Route::delete('/{transaction}', [CartController::class, 'deleteTransaction']);
+            });
+        });
+
+        
+
+
     });
 
 

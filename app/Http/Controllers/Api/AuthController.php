@@ -32,7 +32,25 @@ use Tymon\JWTAuth\Facades\JWTAuth;
  *     @OA\Response(
  *         response=401,
  *         description="Unauthorized"
- *     )
+ *     ),
+ * )
+ *
+ * @OA\Post(
+ *     path="/api/logout",
+ *     tags={"Auth"},
+ *     summary="Logout",
+ *     description="Logout user and invalidate JWT token",
+ *     @OA\Response(
+ *         response=200,
+ *         description="Logout successful",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="message", type="string", example="Successfully logged out")
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=500,
+ *         description="Failed to log out"
+ *    )
  * )
  */
 class AuthController extends Controller

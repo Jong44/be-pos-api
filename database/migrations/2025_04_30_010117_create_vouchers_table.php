@@ -12,8 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('vouchers', function (Blueprint $table) {
-            $table->id()->primary();
-            $table->uuid('outlet_id')->index();
+            $table->uuid('id')->primary();
+            $table->uuid('outlet_id');
             $table->string('code')->unique();
             $table->string('name');
             $table->string('type')->enum('nominal', 'percentage');
@@ -23,6 +23,8 @@ return new class extends Migration
             $table->double('minimum_buying');
             $table->string('status')->enum('active', 'inactive');
             $table->timestamps();
+
+            $table->foreign('outlet_id')->references('id')->on('outlets')->onDelete('cascade');
         });
     }
 
