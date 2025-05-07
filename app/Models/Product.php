@@ -26,4 +26,17 @@ class Product extends Model
     {
         return $this->belongsTo(Outlet::class);
     }
+
+    public function decrement($column, $amount = 1, array $extra = [])
+    {
+        $this->update([
+            $column => $this->{$column} - $amount,
+        ] + $extra);
+    }
+    public function increment($column, $amount = 1, array $extra = [])
+    {
+        $this->update([
+            $column => $this->{$column} + $amount,
+        ] + $extra);
+    }
 }

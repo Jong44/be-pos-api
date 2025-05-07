@@ -10,6 +10,7 @@ use App\Http\Controllers\Api\RoleController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\VoucherController;
 use App\Http\Controllers\Api\PaymentMethodController;
+use App\Http\Controllers\Api\TransactionController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -136,18 +137,15 @@ Route::middleware('auth:api')->group(function () {
 
         Route::prefix('transactions')->group(function () {
             Route::middleware('permission:create transaction')->group(function () {
-                Route::post('/', [CartController::class, 'createTransaction']);
+                Route::post('/', [TransactionController::class, 'createTransaction']);
             });
             Route::middleware('permission:view transactions')->group(function () {
-                Route::get('/', [CartController::class, 'getTransactions']);
-                Route::get('/{transaction}', [CartController::class, 'getTransactionDetail']);
-            });
-            Route::middleware('permission:delete transactions')->group(function () {
-                Route::delete('/{transaction}', [CartController::class, 'deleteTransaction']);
+                Route::get('/', [TransactionController::class, 'getHistoryTransaction']);
+                Route::get('/{transaction}', [TransactionController::class, 'getTransactionDetail']);
             });
         });
 
-        
+
 
 
     });

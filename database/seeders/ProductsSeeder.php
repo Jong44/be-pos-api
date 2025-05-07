@@ -30,6 +30,32 @@ class ProductsSeeder extends Seeder
                 'unit' => 'botol',
                 'created_at' => now(),
             ],
+
+            [
+                'id' => Str::uuid(),
+                'outlet_id' => $outlet->id,
+                'category_id' => $category->id,
+                'name' => 'Sprite 1L',
+                'stock' => 100,
+                'is_non_stock' => false,
+                'initial_price' => 8000,
+                'selling_price' => 10000,
+                'unit' => 'botol',
+                'created_at' => now(),
+            ],
+
+            [
+                'id' => Str::uuid(),
+                'outlet_id' => $outlet->id,
+                'category_id' => $category->id,
+                'name' => 'Fanta 1L',
+                'stock' => 100,
+                'is_non_stock' => false,
+                'initial_price' => 8000,
+                'selling_price' => 10000,
+                'unit' => 'botol',
+                'created_at' => now(),
+            ]
         ]);
     }
 }

@@ -23,11 +23,17 @@ class SuperAdminSeeder extends Seeder
             "view products", "create products", "update products", "delete products",
             "view categories", "create categories", "update categories", "delete categories",
 
+            // Outlet
+            "view outlets", "create outlets", "update outlets", "delete outlets",
+
+            // Payment-Method
+            "view payment methods", "create payment methods", "update payment methods", "delete payment methods",
+
             // Transaksi
             "create transaction", "view transactions", "view transaction detail", "delete transactions",
 
             // Open Bill
-            "create open bill", "view open bills", "delete open bills",
+            "create open bill", "view open bills", "update open bills", "delete open bills",
 
             // Voucher
             "view vouchers", "create vouchers", "update vouchers", "delete vouchers",
