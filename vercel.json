@@ -16,8 +16,8 @@
     "env": {
         "APP_ENV": "production",
         "APP_DEBUG": "true",
-        "APP_URL": "https://e-learning-cw6p0gqih-jong44s-projects.vercel.app",
-        "APP_KEY":"base64:vy6ckPAC1GaFwStDdwthZsoL5mlc1LexcZLc2zxu5e8=",
+        "APP_URL": "https://be-pos-api.vercel.app/",
+        "APP_KEY":"base64:0EEW1Q6U3k31aSyIdqu46PKor0nBlX2ivicW5z7CbLE=",
 
         "APP_CONFIG_CACHE": "/tmp/config.php",
         "APP_EVENTS_CACHE": "/tmp/events.php",
