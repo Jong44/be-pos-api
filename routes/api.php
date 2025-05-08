@@ -141,7 +141,13 @@ Route::middleware('auth:api')->group(function () {
             });
             Route::middleware('permission:view transactions')->group(function () {
                 Route::get('/', [TransactionController::class, 'getHistoryTransaction']);
-                Route::get('/{transaction}', [TransactionController::class, 'getTransactionDetail']);
+                Route::get('/detail/{transaction}', [TransactionController::class, 'getDetailTransaction']);
+                Route::group(['prefix' => 'today'], function () {
+                    Route::get('/income', [TransactionController::class, 'getTodayIncome']);
+                    Route::get('/sells', [TransactionController::class, 'getTodaySell']);
+                    Route::get('/best-product', [TransactionController::class, 'getBestSellingProduct']);
+                    Route::get('/total-transaction', [TransactionController::class, 'getSumTodayTransaction']);
+                });
             });
         });
 
