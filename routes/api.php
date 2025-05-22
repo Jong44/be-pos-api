@@ -10,6 +10,7 @@ use App\Http\Controllers\Api\RoleController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\VoucherController;
 use App\Http\Controllers\Api\PaymentMethodController;
+use App\Http\Controllers\Api\ReportController;
 use App\Http\Controllers\Api\TransactionController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -127,12 +128,13 @@ Route::middleware('auth:api')->group(function () {
 
         Route::group([
             'prefix' => 'cart',
-            'middleware' => ['permission:create transaction', 'permission:view transactions', 'permission:view product'],
+            'middleware' => ['permission:create transaction', 'permission:view transactions', 'permission:view products'],
         ], function () {
             Route::get('/', [CartController::class, 'getCart']);
             Route::post('/', [CartController::class, 'addProductToCart']);
-            Route::delete('/{id}', [CartController::class, 'removeProductFromCart']);
-            Route::put('/{id}', [CartController::class, 'updateCartItem']);
+            Route::delete('/', [CartController::class, 'clearCart']);
+            Route::put('/{id_cart}', [CartController::class, 'updateCartItem']);
+            Route::delete('/{id}', [CartController::class, 'removeCartItem']);
         });
 
         Route::prefix('transactions')->group(function () {
@@ -150,6 +152,22 @@ Route::middleware('auth:api')->group(function () {
                 });
             });
         });
+
+        Route::prefix('reports')->group(function () {
+            Route::middleware('permission:view sales report')->group(function () {
+                Route::post('/sellings', [ReportController::class, 'generateReportSellings']);
+                Route::post('/sellings/export', [ReportController::class, 'exportReportSellings']);
+            });
+
+            Route::middleware('permission:view cashier report')->group(function () {
+                Route::post('/cashier', [ReportController::class, 'generateReportCashier']);
+                Route::post('/cashier/export', [ReportController::class, 'exportReportCashier']);
+            });
+        });
+
+
+
+
 
 
 

@@ -2,10 +2,12 @@
 
 namespace App\Models;
 
+use App\HasUuid;
 use Illuminate\Database\Eloquent\Model;
 
 class Voucher extends Model
 {
+    use HasUuid;
     protected $fillable = [
         'outlet_id',
         'code',

@@ -53,16 +53,17 @@ class CartController extends Controller
         }
 
         return response()->json([
+            'data' => $cartItem ?? Cart::where('outlet_id', $outlet_id)
+                ->where('user_id', $user_id)
+                ->where('product_id', $validatedData['product_id'])
+                ->first(),
             'message' => 'Product added to cart successfully',
         ], 201);
     }
 
-    public function removeProductFromCart(string $id)
+    public function removeCartItem(string $outlet_id, string $id_cart)
     {
-        $user_id = auth()->user()->id;
-
-        $cartItem = Cart::where('id', $id)
-            ->where('user_id', $user_id)
+        $cartItem = Cart::where('id', $id_cart)
             ->first();
 
         if (!$cartItem) {
@@ -76,16 +77,13 @@ class CartController extends Controller
         ], 200);
     }
 
-    public function updateCartItem(Request $request, string $id)
+    public function updateCartItem(Request $request, string $outlet_id, string $id_cart)
     {
         $validatedData = $request->validate([
             'quantity' => 'required|integer|min:1',
         ]);
 
-        $user_id = auth()->user()->id;
-
-        $cartItem = Cart::where('id', $id)
-            ->where('user_id', $user_id)
+        $cartItem = Cart::where('id', $id_cart)
             ->first();
 
         if (!$cartItem) {
@@ -95,6 +93,7 @@ class CartController extends Controller
         $cartItem->update($validatedData);
 
         return response()->json([
+            'data' =>$cartItem,
             'message' => 'Cart item updated successfully',
         ], 200);
     }

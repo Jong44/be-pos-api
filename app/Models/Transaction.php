@@ -28,6 +28,11 @@ class Transaction extends Model
         'total_qty',
     ];
 
+    public function transactionDetails()
+    {
+        return $this->hasMany(TransactionDetail::class);
+    }
+
     public function voucher()
     {
         return $this->belongsTo(Voucher::class);
@@ -36,6 +41,11 @@ class Transaction extends Model
     public function paymentMethod()
     {
         return $this->belongsTo(PaymentMethod::class);
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'cashier_id');
     }
 
     public static function generateCustomCode($prefix = 'SEL', $column = 'code', $padLength = 3)
