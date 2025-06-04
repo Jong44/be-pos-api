@@ -24,6 +24,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'permission' => \Spatie\Permission\Middleware\PermissionMiddleware::class,
             'validate.outlet.access' => \App\Http\Middleware\ValidateOutletAccess::class,
         ]);
+        $middleware->append(\Illuminate\Http\Middleware\HandleCors::class);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         $exceptions->renderable(function (ModelNotFoundException $e, $request) {
