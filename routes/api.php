@@ -27,7 +27,7 @@ Route::middleware('auth:api')->group(function () {
 
 
     Route::group([
-        'middleware' => ['role:superadmin', 'cors'],
+        'middleware' => ['role:superadmin'],
     ], function () {
         Route::prefix('outlets')->group(function () {
             Route::get('/', [OutletController::class, 'index']);
