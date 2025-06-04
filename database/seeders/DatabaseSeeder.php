@@ -16,7 +16,7 @@ class DatabaseSeeder extends Seeder
         // User::factory(10)->create();
 
         $this->call([
-            SuperAdminSeeder::class,
+            SuperadminSeeder::class,
             // Tambahkan seeder lain di sini jika perlu
             OutletsSeeder::class,
             CategoriesSeeder::class,
