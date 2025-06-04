@@ -19,13 +19,13 @@ return Application::configure(basePath: dirname(__DIR__))
         apiPrefix: 'api',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        $middleware->use([
-            \Illuminate\Http\Middleware\HandleCors::class,
-        ]);
         $middleware->alias([
             'role' => \Spatie\Permission\Middleware\RoleMiddleware::class,
             'permission' => \Spatie\Permission\Middleware\PermissionMiddleware::class,
             'validate.outlet.access' => \App\Http\Middleware\ValidateOutletAccess::class,
+        ]);
+        $middleware->append([
+            \Illuminate\Http\Middleware\HandleCors::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
