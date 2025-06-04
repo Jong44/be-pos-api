@@ -9,7 +9,7 @@ use Spatie\Permission\Models\Permission;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 
-class SuperadminSeeder extends Seeder
+class SuperAdminSeeder extends Seeder
 {
     public function run(): void
     {
