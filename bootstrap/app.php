@@ -23,6 +23,7 @@ return Application::configure(basePath: dirname(__DIR__))
             \Illuminate\Http\Middleware\HandleCors::class,
         ]);
         $middleware->alias([
+            'cors' => \Illuminate\Http\Middleware\HandleCors::class,
             'role' => \Spatie\Permission\Middleware\RoleMiddleware::class,
             'permission' => \Spatie\Permission\Middleware\PermissionMiddleware::class,
             'validate.outlet.access' => \App\Http\Middleware\ValidateOutletAccess::class,
