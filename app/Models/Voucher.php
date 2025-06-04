@@ -24,4 +24,26 @@ class Voucher extends Model
     {
         return $this->belongsTo(Outlet::class);
     }
+
+    public function applyable($code, $price)
+    {
+        $today = now();
+        $voucher = Voucher::where('code', $code)
+            ->where('status', 'active')
+            ->where('start_date', '<=', $today)
+            ->where('expired_date', '>=', $today)
+            ->first();
+
+        if ($voucher) {
+            if ($voucher->minimum_buying > $price || $voucher->status != 'active') {
+                return false;
+            }
+            return true;
+        }
+        return false;
+
+
+    }
+
+
 }

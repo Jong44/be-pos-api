@@ -19,7 +19,10 @@ class PaymentMethodController extends Controller
             return response()->json(['message' => 'No payment methods found'], 404);
         }
 
-        return response()->json($paymentMethods);
+        return response()->json([
+            'message' => 'Payment methods retrieved successfully',
+            'data' => $paymentMethods,
+        ], 200);
     }
 
 
@@ -28,32 +31,42 @@ class PaymentMethodController extends Controller
      */
     public function store(PaymentMethodRequest $request, string $outlet_id)
     {
-        $paymentMethod = PaymentMethod::create($request->validated());
+        $validated = $request->validated();
+        $paymentMethod = PaymentMethod::create([
+            'outlet_id' => $outlet_id,
+            'name' => $validated['name'],
+        ]);
 
         if (!$paymentMethod) {
             return response()->json(['message' => 'Payment method creation failed'], 500);
         }
 
-        return response()->json($paymentMethod, 201);
+        return response()->json([
+            'message' => 'Payment method created successfully',
+            'data' => $paymentMethod,
+        ], 201);
     }
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(string $outlet_id, string $id)
     {
         $paymentMethod = PaymentMethod::find($id);
         if (!$paymentMethod) {
             return response()->json(['message' => 'Payment method not found'], 404);
         }
 
-        return response()->json($paymentMethod);
+        return response()->json([
+            'message' => 'Payment method retrieved successfully',
+            'data' => $paymentMethod,
+        ], 200);
     }
 
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(PaymentMethodRequest $request, string $outlet_id, string $id)
     {
         $paymentMethod = PaymentMethod::find($id);
         if (!$paymentMethod) {
@@ -62,13 +75,16 @@ class PaymentMethodController extends Controller
 
         $paymentMethod->update($request->validated());
 
-        return response()->json($paymentMethod);
+        return response()->json([
+            'message' => 'Payment method updated successfully',
+            'data' => $paymentMethod,
+        ], 200);
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(string $outlet_id, string $id)
     {
         $paymentMethod = PaymentMethod::find($id);
         if (!$paymentMethod) {

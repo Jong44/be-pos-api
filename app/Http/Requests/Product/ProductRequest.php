@@ -18,10 +18,10 @@ class ProductRequest extends FormRequest
             'selling_price' => 'required|numeric|min:0',
             'category_id' => 'required|exists:categories,id',
             'stock' => 'nullable|integer|min:0',
-            'is_non_stock' => 'nullable|boolean',
+            'is_non_stock' => 'nullable',
             'initial_price' => 'required|numeric|min:0',
             'unit' => 'required|string|max:50',
-            'hero_images' => 'nullable|string',
+            'hero_images' => 'nullable|file|mimes:jpg,jpeg,png,gif,webp|max:2048',
         ];
     }
 
@@ -45,7 +45,9 @@ class ProductRequest extends FormRequest
             'unit.required' => 'Unit is required',
             'unit.string' => 'Unit must be a string',
             'unit.max' => 'Unit must not exceed 50 characters',
-            'hero_images.string' => 'Hero images must be a string',
+            'hero_images.file' => 'Hero images must be a file',
+            'hero_images.mimes' => 'Hero images must be a file of type: jpg, jpeg, png, gif, webp',
+            'hero_images.max' => 'Hero images must not exceed 2MB',
 
         ];
     }

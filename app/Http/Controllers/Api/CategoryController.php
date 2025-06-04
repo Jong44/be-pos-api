@@ -51,7 +51,7 @@ class CategoryController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(string $outlet_id, string $id)
     {
         // Find the category by ID
         $category = Category::find($id);
@@ -70,7 +70,7 @@ class CategoryController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(CategoryRequest $request, string $outlet_id, string $id)
     {
         $category = Category::find($id);
 

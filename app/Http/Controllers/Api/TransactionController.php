@@ -9,66 +9,74 @@ use App\Models\Product;
 use App\Models\Transaction;
 use App\Models\TransactionDetail;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class TransactionController extends Controller
 {
     public function createTransaction(TransactionRequest $request, string $outlet_id)
     {
         $validated = $request->validated();
-        $validated['outlet_id'] = $outlet_id;
-        $validated['cashier_id'] = auth()->user()->id;
-        $validated['code'] = Transaction::generateCustomCode();
 
-        $transaction = Transaction::create($validated);
+        DB::beginTransaction();
 
+        try {
+            $validated['outlet_id'] = $outlet_id;
+            $validated['cashier_id'] = auth()->user()->id;
+            $validated['code'] = Transaction::generateCustomCode();
 
-        if ($transaction) {
-            $transactionDetails = [];
-            foreach ($request->products as $product) {
-                $productModel = Product::find($product['product_id']);
+            $transaction = Transaction::create($validated);
+
+            $products = collect($request->products);
+            $productIds = $products->pluck('product_id')->all();
+
+            $productModels = Product::whereIn('id', $productIds)->get()->keyBy('id');
+
+            $details = [];
+            foreach ($products as $product) {
+                $productModel = $productModels->get($product['product_id']);
+
                 if (!$productModel) {
+                    DB::rollBack();
                     return response()->json([
                         'status' => 'error',
-                        'message' => 'Product not found'
+                        'message' => "Product not found: {$product['product_id']}"
                     ], 404);
                 }
 
-                $cost = $productModel->initial_price * $product['qty'];
-                $price = $productModel->selling_price * $product['qty'];
-
-                TransactionDetail::create([
+                $qty = $product['qty'];
+                $details[] = [
                     'code' => $validated['code'],
                     'transaction_id' => $transaction->id,
                     'product_id' => $product['product_id'],
-                    'qty' => $product['qty'],
-                    'price' => $price,
-                    'cost' => $cost,
-                ]);
+                    'qty' => $qty,
+                    'price' => $productModel->selling_price * $qty,
+                    'cost' => $productModel->initial_price * $qty,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ];
+
+                $productModel->decrement('stock', $qty);
             }
 
-            // delete cart
-            $cart = Cart::where('outlet_id', $outlet_id)
-                ->where('user_id', auth()->user()->id)
-                ->first();
-            if ($cart) {
-                $cart->delete();
-            }
+            TransactionDetail::insert($details);
 
+            // Delete cart
+            Cart::where('outlet_id', $outlet_id)
+                ->where('user_id', auth()->id())
+                ->delete();
 
-            // decrement product stock
-            foreach ($request->products as $product) {
-                $productModel = Product::find($product['product_id']);
-                if ($productModel) {
-                    $productModel->decrement('stock', $product['qty']);
-                }
-            }
+            DB::commit();
 
             return response()->json([
                 'status' => 'success',
                 'message' => 'Transaction created successfully',
-                'data' => $transaction
+                'data' => $transaction->load('transactionDetails')
             ], 201);
-        } else {
+        } catch (\Throwable $e) {
+            DB::rollBack();
+            Log::error('Transaction creation failed', ['error' => $e->getMessage()]);
+
             return response()->json([
                 'status' => 'error',
                 'message' => 'Failed to create transaction'
@@ -84,12 +92,12 @@ class TransactionController extends Controller
             })
             ->get();
 
-            if ($transactions->isEmpty()) {
-                return response()->json([
-                    'status' => 'error',
-                    'message' => 'No transactions found'
-                ], 404);
-            }
+        if ($transactions->isEmpty()) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'No transactions found'
+            ], 404);
+        }
 
         return response()->json([
             'status' => 'success',

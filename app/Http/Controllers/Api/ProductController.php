@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Product\ProductRequest;
 use App\Models\Product;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class ProductController extends Controller
 {
@@ -18,6 +19,9 @@ class ProductController extends Controller
         if ($products->isEmpty()) {
             return response()->json(['message' => 'No products found'], 404);
         }
+        $products->each(function ($product) {
+            $product->hero_images = $product->hero_images ? asset('storage/' . $product->hero_images) : null;
+        });
 
         return response()->json([
             'products' => $products,
@@ -38,6 +42,13 @@ class ProductController extends Controller
         // Create a new product
         $product = Product::create($validatedData);
 
+        // store image product
+        if ($request->hasFile('hero_images')) {
+            $imagePath = $request->file('hero_images')->store('products', 'public');
+            $product->hero_images = $imagePath;
+            $product->save();
+        }
+
         if (!$product) {
             return response()->json(['message' => 'Failed to create product'], 500);
         }
@@ -51,7 +62,7 @@ class ProductController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(string $outlet_id, string $id)
     {
         // Find the product by ID
         $product = Product::find($id);
@@ -60,6 +71,7 @@ class ProductController extends Controller
         if (!$product) {
             return response()->json(['message' => 'Product not found'], 404);
         }
+        $product->hero_images = $product->hero_images ? asset('storage/' . $product->hero_images) : null;
 
         return response()->json([
             'product' => $product,
@@ -70,28 +82,37 @@ class ProductController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, string $outlet_id, string $id)
     {
-
         $product = Product::find($id);
 
         if (!$product) {
             return response()->json(['message' => 'Product not found'], 404);
         }
 
-        // Validate the request data
         $validatedData = $request->validate([
-            'name' => 'sometimes|required|string|max:255',
-            'selling_price' => 'sometimes|required|numeric|min:0',
-            'category_id' => 'sometimes|required|exists:categories,id',
-            'stock' => 'sometimes|nullable|integer|min:0',
-            'is_non_stock' => 'sometimes|nullable|boolean',
-            'initial_price' => 'sometimes|required|numeric|min:0',
-            'unit' => 'sometimes|required|string|max:50',
-            'hero_images' => 'sometimes|nullable|string',
+            'name' => 'required|string|max:255',
+            'selling_price' => 'required|numeric|min:0',
+            'category_id' => 'required|exists:categories,id',
+            'stock' => 'nullable|integer|min:0',
+            'is_non_stock' => 'nullable',
+            'initial_price' => 'required|numeric|min:0',
+            'unit' => 'required|string|max:50',
+            'hero_images' => 'nullable|file|mimes:jpg,jpeg,png,gif,webp|max:2048',
         ]);
 
-        // Update the product
+
+        if ($request->hasFile('hero_images')) {
+            $imagePath = $request->file('hero_images')->store('products', 'public');
+
+            if ($product->hero_images) {
+                Storage::disk('public')->delete($product->hero_images);
+            }
+
+            $validatedData['hero_images'] = $imagePath;
+        }
+
+        // Update product
         $product->update($validatedData);
 
         return response()->json([

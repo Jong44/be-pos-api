@@ -24,6 +24,7 @@ class PaymentMethodRequest extends FormRequest
             'name.required' => 'Name is required',
             'name.string' => 'Name must be a string',
             'name.max' => 'Name may not be greater than 255 characters',
+
         ];
     }
 }

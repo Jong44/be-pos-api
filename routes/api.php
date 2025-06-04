@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\CartController;
 use App\Http\Controllers\Api\CategoryController;
+use App\Http\Controllers\Api\OpenBillController;
 use App\Http\Controllers\Api\OutletController;
 use App\Http\Controllers\Api\PaymentMethodController as ApiPaymentMethodController;
 use App\Http\Controllers\Api\ProductController;
@@ -71,7 +72,7 @@ Route::middleware('auth:api')->group(function () {
                 Route::post('/', [ProductController::class, 'store']);
             });
             Route::middleware('permission:update products')->group(function () {
-                Route::put('/{product}', [ProductController::class, 'update']);
+                Route::post('/{product}', [ProductController::class, 'update']);
             });
             Route::middleware('permission:delete products')->group(function () {
                 Route::delete('/{product}', [ProductController::class, 'destroy']);
@@ -137,6 +138,25 @@ Route::middleware('auth:api')->group(function () {
             Route::delete('/{id}', [CartController::class, 'removeCartItem']);
         });
 
+        Route::prefix('open-bills')->group(function () {
+            Route::middleware('permission:view open bills')->group(function () {
+                Route::get('/', [OpenBillController::class, 'getOpenBills']);
+                Route::get('/{bill}', [OpenBillController::class, 'getOpenBillDetail']);
+            });
+            Route::middleware('permission:create open bill')->group(function () {
+                Route::post('/', [OpenBillController::class, 'createOpenBill']);
+            });
+            Route::middleware('permission:update open bills')->group(function () {
+                Route::put('/{bill}', [OpenBillController::class, 'updateOpenBill']);
+            });
+            Route::middleware('permission:delete open bills')->group(function () {
+                Route::delete('/{bill}', [OpenBillController::class, 'deleteOpenBill']);
+            });
+            Route::middleware('permission:update open bills')->group(function () {
+                Route::put('/{bill}/close', [OpenBillController::class, 'closeOpenBill']);
+            });
+        });
+
         Route::prefix('transactions')->group(function () {
             Route::middleware('permission:create transaction')->group(function () {
                 Route::post('/', [TransactionController::class, 'createTransaction']);
@@ -164,14 +184,6 @@ Route::middleware('auth:api')->group(function () {
                 Route::post('/cashier/export', [ReportController::class, 'exportReportCashier']);
             });
         });
-
-
-
-
-
-
-
-
     });
 
 
