@@ -15,7 +15,10 @@ class ProductController extends Controller
      */
     public function index(string $outlet_id)
     {
-        $products = Product::where('outlet_id', $outlet_id)->get();
+        $products = Product::with('category')
+            ->where('outlet_id', $outlet_id)
+            ->orderBy('created_at', 'desc')
+            ->get();
         if ($products->isEmpty()) {
             return response()->json(['message' => 'No products found'], 404);
         }
@@ -65,7 +68,7 @@ class ProductController extends Controller
     public function show(string $outlet_id, string $id)
     {
         // Find the product by ID
-        $product = Product::find($id);
+        $product = Product::with('category')->where('id', $id)->where('outlet_id', $outlet_id)->first();
 
         // Check if the product exists
         if (!$product) {
