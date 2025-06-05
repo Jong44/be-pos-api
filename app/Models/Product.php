@@ -39,4 +39,9 @@ class Product extends Model
             $column => $this->{$column} + $amount,
         ] + $extra);
     }
+
+    public function category()
+    {
+        return $this->belongsTo(Category::class);
+    }
 }
