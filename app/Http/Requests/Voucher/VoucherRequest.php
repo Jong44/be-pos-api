@@ -14,7 +14,6 @@ class VoucherRequest extends FormRequest
     public function rules()
     {
         return [
-            'outlet_id' => 'required|exists:outlets,id',
             'code' => 'required|string|max:255',
             'name' => 'required|string|max:255',
             'type' => 'required|in:percentage,nominal',
@@ -29,8 +28,6 @@ class VoucherRequest extends FormRequest
     public function messages()
     {
         return [
-            'outlet_id.required' => 'Outlet ID is required',
-            'outlet_id.exists' => 'Outlet ID must exist in the outlets table',
             'code.required' => 'Code is required',
             'name.required' => 'Name is required',
             'type.required' => 'Type is required',
