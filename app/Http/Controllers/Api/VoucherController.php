@@ -40,7 +40,7 @@ class VoucherController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(string $outlet_id,string $id)
     {
         $voucher = Voucher::find($id);
         if (!$voucher) {
@@ -53,7 +53,7 @@ class VoucherController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request,string $outlet_id, string $id)
     {
         $voucher = Voucher::find($id);
         if (!$voucher) {
@@ -68,7 +68,7 @@ class VoucherController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(string $outlet_id,string $id)
     {
         $voucher = Voucher::find($id);
         if (!$voucher) {
