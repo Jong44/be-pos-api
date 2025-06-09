@@ -27,7 +27,8 @@ class VoucherController extends Controller
      */
     public function store(VoucherRequest $request, string $outlet_id)
     {
-        $request->merge(['outlet_id' => $outlet_id]);
+        $validatedData = $request->validated();
+        $validatedData['outlet_id'] = $outlet_id;
         $voucher = Voucher::create($request->validated());
 
         if (!$voucher) {
