@@ -29,7 +29,7 @@ class VoucherController extends Controller
     {
         $validatedData = $request->validated();
         $validatedData['outlet_id'] = $outlet_id;
-        $voucher = Voucher::create($request->validated());
+        $voucher = Voucher::create($validatedData);
 
         if (!$voucher) {
             return response()->json(['message' => 'Voucher creation failed'], 500);
