@@ -38,7 +38,7 @@ class RoleController extends Controller
             return response()->json(['message' => 'You are not authorized to access this resource'], 403);
         }
 
-        $roles = Role::all();
+        $roles = Role::with("permissions")->get();
 
         if ($roles->isEmpty()) {
             return response()->json(['message' => 'No roles found'], 404);
@@ -93,7 +93,7 @@ class RoleController extends Controller
      */
     public function show(string $id)
     {
-        $role = Role::find($id);
+        $role = Role::with("permissions")->where('id',$id)->first();
 
         if (!$role) {
             return response()->json(['message' => 'Role not found'], 404);

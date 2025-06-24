@@ -15,74 +15,90 @@ use Illuminate\Support\Facades\Log;
 class TransactionController extends Controller
 {
     public function createTransaction(TransactionRequest $request, string $outlet_id)
-    {
-        $validated = $request->validated();
+{
+    $validated = $request->validated();
 
-        DB::beginTransaction();
+    DB::beginTransaction();
 
-        try {
-            $validated['outlet_id'] = $outlet_id;
-            $validated['cashier_id'] = auth()->user()->id;
-            $validated['code'] = Transaction::generateCustomCode();
+    try {
+        $validated['outlet_id'] = $outlet_id;
+        $validated['cashier_id'] = auth()->user()->id;
+        $validated['code'] = Transaction::generateCustomCode();
 
-            $transaction = Transaction::create($validated);
+        $transaction = Transaction::create($validated);
 
-            $products = collect($request->products);
-            $productIds = $products->pluck('product_id')->all();
+        $products = collect($request->products);
+        $productIds = $products->pluck('product_id')->all();
 
-            $productModels = Product::whereIn('id', $productIds)->get()->keyBy('id');
+        $productModels = Product::whereIn('id', $productIds)->get()->keyBy('id');
 
-            $details = [];
-            foreach ($products as $product) {
-                $productModel = $productModels->get($product['product_id']);
+        $details = [];
 
-                if (!$productModel) {
-                    DB::rollBack();
-                    return response()->json([
-                        'status' => 'error',
-                        'message' => "Product not found: {$product['product_id']}"
-                    ], 404);
-                }
+        foreach ($products as $product) {
+            $productModel = $productModels->get($product['product_id']);
 
-                $qty = $product['qty'];
-                $details[] = [
-                    'code' => $validated['code'],
-                    'transaction_id' => $transaction->id,
-                    'product_id' => $product['product_id'],
-                    'qty' => $qty,
-                    'price' => $productModel->selling_price * $qty,
-                    'cost' => $productModel->initial_price * $qty,
-                    'created_at' => now(),
-                    'updated_at' => now(),
-                ];
-
-                $productModel->decrement('stock', $qty);
+            if (!$productModel) {
+                DB::rollBack();
+                return response()->json([
+                    'status' => 'error',
+                    'message' => "Product not found: {$product['product_id']}"
+                ], 404);
             }
 
-            TransactionDetail::insert($details);
+            $qty = $product['qty'];
 
-            // Delete cart
-            Cart::where('outlet_id', $outlet_id)
-                ->where('user_id', auth()->id())
-                ->delete();
+            if ($qty < 1) {
+                DB::rollBack();
+                return response()->json([
+                    'status' => 'error',
+                    'message' => "Invalid quantity for product: {$product['product_id']}"
+                ], 400);
+            }
 
-            DB::commit();
+            $details[] = [
+                'code' => $validated['code'],
+                'transaction_id' => $transaction->id,
+                'product_id' => $product['product_id'],
+                'qty' => $qty,
+                'price' => $productModel->selling_price * $qty,
+                'cost' => $productModel->initial_price * $qty,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ];
 
-            return response()->json([
-                'status' => 'success',
-                'message' => 'Transaction created successfully',
-                'data' => $transaction->load('transactionDetails')
-            ], 201);
-        } catch (\Throwable $e) {
-            DB::rollBack();
-            Log::error('Transaction creation failed', ['error' => $e->getMessage()]);
-
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Failed to create transaction'
-            ], 500);
+            $productModel->decrement('stock', $qty);
         }
+
+        foreach ($details as $detail) {
+            
+            TransactionDetail::create($detail);
+        }
+
+        // Hapus cart
+        Cart::where('outlet_id', $outlet_id)
+            ->where('user_id', auth()->id())
+            ->delete();
+
+        DB::commit();
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Transaction created successfully',
+            'data' => $transaction->load('transactionDetails')
+        ], 201);
+    } catch (\Throwable $e) {
+        DB::rollBack();
+        Log::error('Transaction creation failed', [
+            'error' => $e->getMessage(),
+            'trace' => $e->getTraceAsString()
+        ]);
+
+        return response()->json([
+            'status' => 'error',
+            'message' => 'Failed to create transactions'
+        ], 500);
     }
+}
 
     public function getHistoryTransaction(string $outlet_id)
     {

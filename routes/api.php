@@ -13,6 +13,7 @@ use App\Http\Controllers\Api\VoucherController;
 use App\Http\Controllers\Api\PaymentMethodController;
 use App\Http\Controllers\Api\ReportController;
 use App\Http\Controllers\Api\TransactionController;
+use App\Http\Controllers\Api\LogController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -53,6 +54,7 @@ Route::middleware('auth:api')->group(function () {
         });
 
         Route::get('permissions', [RoleController::class, 'indexPermission']);
+        Route::get('logs', [LogController::class, 'getAllLogs']);
 
     });
 
@@ -141,7 +143,7 @@ Route::middleware('auth:api')->group(function () {
         Route::prefix('open-bills')->group(function () {
             Route::middleware('permission:view open bills')->group(function () {
                 Route::get('/', [OpenBillController::class, 'getOpenBills']);
-                Route::get('/{bill}', [OpenBillController::class, 'getOpenBillDetail']);
+                Route::get('/{bill}', [OpenBillController::class, 'getOpenBillById']);
             });
             Route::middleware('permission:create open bill')->group(function () {
                 Route::post('/', [OpenBillController::class, 'createOpenBill']);

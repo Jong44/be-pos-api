@@ -18,7 +18,7 @@ class UserController extends Controller
             return response()->json(['message' => 'You are not authorized to access this resource'], 403);
         }
 
-        $users = User::with('outlet')->get();
+        $users = User::with('outlet','roles')->get();
 
         if ($users->isEmpty()) {
             return response()->json(['message' => 'No users found'], 404);
@@ -63,7 +63,7 @@ class UserController extends Controller
             return response()->json(['message' => 'You are not authorized to access this resource'], 403);
         }
 
-        $user = User::with('outlet')->find($id);
+        $user = User::with('outlet','roles')->find($id);
 
         if (!$user) {
             return response()->json(['message' => 'User not found'], 404);

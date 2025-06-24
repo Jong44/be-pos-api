@@ -23,6 +23,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'role' => \Spatie\Permission\Middleware\RoleMiddleware::class,
             'permission' => \Spatie\Permission\Middleware\PermissionMiddleware::class,
             'validate.outlet.access' => \App\Http\Middleware\ValidateOutletAccess::class,
+            'setdbuserid' => \App\Http\Middleware\SetPostgresUserId::class
         ]);
         $middleware->append([
             \Illuminate\Http\Middleware\HandleCors::class,
