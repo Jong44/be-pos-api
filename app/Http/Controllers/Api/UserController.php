@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
 use App\Http\Requests\User\UserRequest;
+use Illuminate\Support\Str;
 
 class UserController extends Controller
 {
@@ -101,7 +102,53 @@ class UserController extends Controller
      * Update the specified resource in storage.
      */
     
-     
+     public function update(Request $request, string $id)
+    {
+
+        if (!Str::isUuid($id)) {
+            return response()->json(['message' => 'Invalid user ID format'], 400);
+        }
+
+        $user = User::find($id);
+
+        if (!$user) {
+            return response()->json(['message' => 'User not found'], 404);
+        }
+
+        if ($user->id !== auth()->user()->id) {    
+            if (!auth()->user()->hasRole('superadmin')) {
+                return response()->json(['message' => 'You are not authorized to access this resource'], 403);
+            }
+        }
+
+        $validatedData = $request->validate([
+            'username' => 'sometimes|required|string|max:255',
+            'email' => 'sometimes|required|string|email|max:255|unique:users,email,' . $user->id,
+            'password' => 'sometimes|required|string|min:8|confirmed',
+            'role' => 'sometimes|required|string',
+            'outlet_id' => 'sometimes|nullable|exists:outlets,id',
+        ]);
+        if ($request->has('password')) {
+            $validatedData['password'] = bcrypt($validatedData['password']);
+        } else {
+            unset($validatedData['password']);
+        }
+        if ($request->has('role')) {
+            $user->syncRoles($validatedData['role']);
+        }
+        if ($request->has('outlet_id')) {
+            $user->outlet_id = $validatedData['outlet_id'];
+        }
+        $user->username = $validatedData['username'];
+        if ($request->has('email')) {
+            $user->email = $validatedData['email'];
+        }
+        if ($request->has('password')) {
+            $user->password = $validatedData['password'];
+        }
+        $user->save();
+        return response()->json(['message' => 'User updated successfully', 'user' => $user], 200);
+    }
 
     /**
      * Remove the specified resource from storage.

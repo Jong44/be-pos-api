@@ -12,8 +12,8 @@ class SetPostgresUserId
 {
     public function handle($request, Closure $next)
     {
-        if (auth::check()) {
-            DB::statement("SET LOCAL app.current_user_id = '" . auth::id() . "'");
+        if (auth()->check()) {
+            DB::statement("SET LOCAL app.current_user_id = '" . auth()->user()->id . "'");
         }
 
         return $next($request);

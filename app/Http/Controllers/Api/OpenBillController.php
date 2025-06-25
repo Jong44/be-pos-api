@@ -63,7 +63,6 @@ class OpenBillController extends Controller
     public function getOpenBills(string $outlet_id)
     {
         $openBills = OpenBill::where('outlet_id', $outlet_id)
-            ->where('cashier_id', auth()->id())
             ->with(['details.product', 'cashier'])
             ->get();
 
@@ -83,7 +82,6 @@ class OpenBillController extends Controller
     public function getOpenBillById(string $outlet_id, string $id)
     {
         $openBill = OpenBill::where('outlet_id', $outlet_id)
-            ->where('cashier_id', auth()->id())
             ->with(['details.product', 'cashier'])
             ->find($id);
 
