@@ -64,7 +64,7 @@ class OpenBillController extends Controller
     {
         $openBills = OpenBill::where('outlet_id', $outlet_id)
             ->where('cashier_id', auth()->id())
-            ->with(['details', 'cashier'])
+            ->with(['details.product', 'cashier'])
             ->get();
 
         if ($openBills->isEmpty()) {
@@ -84,7 +84,7 @@ class OpenBillController extends Controller
     {
         $openBill = OpenBill::where('outlet_id', $outlet_id)
             ->where('cashier_id', auth()->id())
-            ->with(['details', 'cashier'])
+            ->with(['details.product', 'cashier'])
             ->find($id);
 
         if (!$openBill) {

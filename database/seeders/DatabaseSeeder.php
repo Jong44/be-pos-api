@@ -24,6 +24,7 @@ class DatabaseSeeder extends Seeder
             PaymentMethodSeeder::class,
             VouchersSeeder::class,
             TransactionSeeder::class,
+            UserSuperAdminSeeder::class
         ]);
     }
 }

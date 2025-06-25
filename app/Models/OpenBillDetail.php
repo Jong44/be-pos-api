@@ -17,4 +17,8 @@ class OpenBillDetail extends Model
         'cost',
         'qty',
     ];
+
+    public function product() {
+        return $this->belongsTo(Product::class);
+    }
 }
