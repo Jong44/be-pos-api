@@ -60,8 +60,20 @@ class UserController extends Controller
      */
     public function show(string $id)
     {
-        if (!auth()->user()->hasRole('superadmin')) {
-            return response()->json(['message' => 'You are not authorized to access this resource'], 403);
+        if (!Str::isUuid($id)) {
+            return response()->json(['message' => 'Invalid user ID format'], 400);
+        }
+
+        $user = User::find($id);
+
+        if (!$user) {
+            return response()->json(['message' => 'User not found'], 404);
+        }
+
+        if ($user->id !== auth()->user()->id) {
+            if (!auth()->user()->hasRole('superadmin')) {
+                return response()->json(['message' => 'You are not authorized to access this resource'], 403);
+            }
         }
 
         $user = User::with('outlet','roles')->find($id);
@@ -101,7 +113,7 @@ class UserController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    
+
      public function update(Request $request, string $id)
     {
 
@@ -115,7 +127,7 @@ class UserController extends Controller
             return response()->json(['message' => 'User not found'], 404);
         }
 
-        if ($user->id !== auth()->user()->id) {    
+        if ($user->id !== auth()->user()->id) {
             if (!auth()->user()->hasRole('superadmin')) {
                 return response()->json(['message' => 'You are not authorized to access this resource'], 403);
             }

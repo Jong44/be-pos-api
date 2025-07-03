@@ -16,6 +16,8 @@ use App\Http\Controllers\Api\TransactionController;
 use App\Http\Controllers\Api\LogController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\AbsensiController;
+
 
 // test route
 Route::get('/test', function () {
@@ -25,8 +27,6 @@ Route::get('/test', function () {
 Route::post('/login', [AuthController::class, 'login']);
 
 Route::middleware('auth:api')->group(function () {
-
-
     Route::group([
         'middleware' => ['role:superadmin'],
     ], function () {
@@ -54,12 +54,17 @@ Route::middleware('auth:api')->group(function () {
         });
 
         Route::get('permissions', [RoleController::class, 'indexPermission']);
-        Route::get('logs', [LogController::class, 'getAllLogs']);
+
+        Route::middleware('permission:view activity logs')->group(function () {
+            Route::get('logs', [LogController::class, 'getAllLogs']);
+        });
 
     });
 
     Route::get('outlets/{outlet}', [OutletController::class, 'show']);
     Route::get('user/current', [UserController::class, 'showCurrentUser']);
+    Route::get('absensi', [AbsensiController::class, 'getAllAbsensi']);
+
 
     Route::group([
         'prefix' => 'outlets/{outlet_id}',
@@ -184,6 +189,27 @@ Route::middleware('auth:api')->group(function () {
             Route::middleware('permission:view cashier report')->group(function () {
                 Route::post('/cashier', [ReportController::class, 'generateReportCashier']);
                 Route::post('/cashier/export', [ReportController::class, 'exportReportCashier']);
+            });
+        });
+
+
+          // Absensi
+            // "checkin attendance", "checkout attendance", "view attendance",
+
+        Route::prefix('absensi')->group(function () {
+            Route::middleware('permission:view attendance')->group(function () {
+                Route::get('/{absensi}/id', [AbsensiController::class, 'getAbsensiById']);
+                Route::get('/outlet', [AbsensiController::class, 'getAbsensiByOutlet']);
+            });
+
+            Route::get('/current', [AbsensiController::class, 'getAbsensiCurrentUser']);
+
+            Route::middleware('permission:checkin attendance')->group(function () {
+                Route::post('/check-in', [AbsensiController::class, 'checkInAbsensi']);
+            });
+
+            Route::middleware('permission:checkout attendance')->group(function () {
+                Route::post('/check-out', [AbsensiController::class, 'checkOutAbsensi']);
             });
         });
     });

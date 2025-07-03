@@ -25,6 +25,45 @@ class TransactionController extends Controller
         $validated['cashier_id'] = auth()->user()->id;
         $validated['code'] = Transaction::generateCustomCode();
 
+        // validate voucher if exists
+        if (isset($validated['voucher_id'])) {
+            $voucher = \App\Models\Voucher::find($validated['voucher_id']);
+            if (!$voucher) {
+                DB::rollBack();
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Voucher not found'
+                ], 404);
+            }
+
+            // Check if voucher is valid for this outlet
+            if ($voucher->outlet_id !== $outlet_id) {
+                DB::rollBack();
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Voucher is not valid for this outlet'
+                ], 400);
+            }
+
+            // Check if voucher is still valid
+            if ($voucher->expired_at < now()) {
+                DB::rollBack();
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Voucher has expired'
+                ], 400);
+            }
+
+            // Check if voucher is already used
+            if ($voucher->is_used) {
+                DB::rollBack();
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Voucher has already been used'
+                ], 400);
+            }
+        }
+
         $transaction = Transaction::create($validated);
 
         $products = collect($request->products);
@@ -70,7 +109,7 @@ class TransactionController extends Controller
         }
 
         foreach ($details as $detail) {
-            
+
             TransactionDetail::create($detail);
         }
 
