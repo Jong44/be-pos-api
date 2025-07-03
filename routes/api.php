@@ -27,54 +27,49 @@ Route::get('/test', function () {
 Route::post('/login', [AuthController::class, 'login']);
 
 Route::middleware('auth:api')->group(function () {
-    Route::group([
-        'middleware' => ['role:superadmin'],
-    ], function () {
-        Route::prefix('outlets')->group(function () {
-            Route::get('/', [OutletController::class, 'index']);
-            Route::post('/', [OutletController::class, 'store']);
-            Route::put('/{outlet}', [OutletController::class, 'update']);
-            Route::delete('/{outlet}', [OutletController::class, 'destroy']);
+    Route::prefix('outlets')->group(function () {
+        Route::get('/', [OutletController::class, 'index']);
+        Route::post('/', [OutletController::class, 'store']);
+        Route::put('/{outlet}', [OutletController::class, 'update']);
+        Route::delete('/{outlet}', [OutletController::class, 'destroy']);
+    });
+
+    Route::prefix('roles')->group(function () {
+        Route::middleware('permission:view roles')->group(function () {
+            Route::get('/', [RoleController::class, 'index']);
+            Route::get('/{roles}', [RoleController::class, 'show']);
         });
-
-        Route::prefix('roles')->group(function () {
-            Route::middleware('permission:view roles')->group(function () {
-                Route::get('/', [RoleController::class, 'index']);
-                Route::get('/{roles}', [RoleController::class, 'show']);
-            });
-            Route::middleware('permission:create roles')->group(function () {
-                Route::post('/', [RoleController::class, 'store']);
-            });
-            Route::middleware('permission:update roles')->group(function () {
-                Route::put('/{roles}', [RoleController::class, 'update']);
-            });
-            Route::middleware('permission:update roles')->group(function () {
-                Route::delete('/{roles}', [RoleController::class, 'destroy']);
-            });
+        Route::middleware('permission:create roles')->group(function () {
+            Route::post('/', [RoleController::class, 'store']);
         });
-
-        Route::prefix('users')->group(function () {
-            Route::middleware('permission:view users')->group(function () {
-                Route::get('/', [UserController::class, 'index']);
-                Route::get('/{user}', [UserController::class, 'show']);
-            });
-            Route::middleware('permission:create users')->group(function () {
-                Route::post('/', [UserController::class, 'store']);
-            });
-            Route::middleware('permission:update users')->group(function () {
-                Route::put('/{user}', [UserController::class, 'update']);
-            });
-            Route::middleware('permission:update users')->group(function () {
-                Route::delete('/{user}', [UserController::class, 'destroy']);
-            });
+        Route::middleware('permission:update roles')->group(function () {
+            Route::put('/{roles}', [RoleController::class, 'update']);
         });
-
-        Route::get('permissions', [RoleController::class, 'indexPermission']);
-
-        Route::middleware('permission:view activity logs')->group(function () {
-            Route::get('logs', [LogController::class, 'getAllLogs']);
+        Route::middleware('permission:update roles')->group(function () {
+            Route::delete('/{roles}', [RoleController::class, 'destroy']);
         });
+    });
 
+    Route::prefix('users')->group(function () {
+        Route::middleware('permission:view users')->group(function () {
+            Route::get('/', [UserController::class, 'index']);
+            Route::get('/{user}', [UserController::class, 'show']);
+        });
+        Route::middleware('permission:create users')->group(function () {
+            Route::post('/', [UserController::class, 'store']);
+        });
+        Route::middleware('permission:update users')->group(function () {
+            Route::put('/{user}', [UserController::class, 'update']);
+        });
+        Route::middleware('permission:update users')->group(function () {
+            Route::delete('/{user}', [UserController::class, 'destroy']);
+        });
+    });
+
+    Route::get('permissions', [RoleController::class, 'indexPermission']);
+
+    Route::middleware('permission:view activity logs')->group(function () {
+        Route::get('logs', [LogController::class, 'getAllLogs']);
     });
 
     Route::get('outlets/{outlet}', [OutletController::class, 'show']);
@@ -209,8 +204,8 @@ Route::middleware('auth:api')->group(function () {
         });
 
 
-          // Absensi
-            // "checkin attendance", "checkout attendance", "view attendance",
+        // Absensi
+        // "checkin attendance", "checkout attendance", "view attendance",
 
         Route::prefix('absensi')->group(function () {
             Route::middleware('permission:view attendance')->group(function () {
@@ -233,6 +228,4 @@ Route::middleware('auth:api')->group(function () {
 
 
     Route::post('logout', [AuthController::class, 'logout']);
-
-
 });
