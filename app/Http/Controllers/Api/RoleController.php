@@ -14,10 +14,6 @@ class RoleController extends Controller
 
     public function indexPermission()
     {
-        if (!auth()->user()->hasRole('superadmin')) {
-            return response()->json(['message' => 'You are not authorized to access this resource'], 403);
-        }
-
         $permissions = Permission::all();
 
         if ($permissions->isEmpty()) {
@@ -34,9 +30,6 @@ class RoleController extends Controller
      */
     public function index()
     {
-        if (!auth()->user()->hasRole('superadmin')) {
-            return response()->json(['message' => 'You are not authorized to access this resource'], 403);
-        }
 
         $roles = Role::with("permissions")->get();
 
@@ -63,10 +56,6 @@ class RoleController extends Controller
      */
     public function store(UserRoleRequest $request)
     {
-        if (!auth()->user()->hasRole('superadmin')) {
-            return response()->json(['message' => 'You are not authorized to access this resource'], 403);
-        }
-
         $role = Role::create([
             'name' => $request->input('name'),
         ]);
@@ -115,9 +104,6 @@ class RoleController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        if (!auth()->user()->hasRole('superadmin')) {
-            return response()->json(['message' => 'You are not authorized to access this resource'], 403);
-        }
 
         $role = Role::find($id);
 
@@ -141,9 +127,6 @@ class RoleController extends Controller
      */
     public function destroy(string $id)
     {
-        if (!auth()->user()->hasRole('superadmin')) {
-            return response()->json(['message' => 'You are not authorized to access this resource'], 403);
-        }
 
         $role = Role::find($id);
 

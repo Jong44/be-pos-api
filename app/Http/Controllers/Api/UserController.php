@@ -15,9 +15,6 @@ class UserController extends Controller
      */
     public function index()
     {
-        if (!auth()->user()->hasRole('superadmin')) {
-            return response()->json(['message' => 'You are not authorized to access this resource'], 403);
-        }
 
         $users = User::with('outlet','roles')->get();
 
@@ -43,9 +40,6 @@ class UserController extends Controller
      */
     public function store(UserRequest $request)
     {
-        if (!auth()->user()->hasRole('superadmin')) {
-            return response()->json(['message' => 'You are not authorized to access this resource'], 403);
-        }
 
         $validatedData = $request->validated();
         $validatedData['password'] = bcrypt($validatedData['password']);
@@ -167,9 +161,6 @@ class UserController extends Controller
      */
     public function destroy(string $id)
     {
-        if (!auth()->user()->hasRole('superadmin')) {
-            return response()->json(['message' => 'You are not authorized to access this resource'], 403);
-        }
 
         $user = User::find($id);
 
