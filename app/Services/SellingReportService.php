@@ -27,7 +27,7 @@ class SellingReportService
         $endDate = Carbon::parse($data['end_date']);
 
         $transaction = Transaction::query()
-            ->with(['transactionDetails', 'paymentMethod'])
+            ->with(['transactionDetails.product', 'paymentMethod'])
             ->where('outlet_id', $data['outlet_id'])
             ->whereBetween('created_at', [
                 $startDate->startOfDay(),
