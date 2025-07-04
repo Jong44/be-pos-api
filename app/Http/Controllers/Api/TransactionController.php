@@ -141,8 +141,8 @@ class TransactionController extends Controller
 
     public function getHistoryTransaction(string $outlet_id)
     {
-        $transactions = TransactionDetail::with(['transaction', 'product'])
-            ->whereHas('transaction.paymentMethod',  function ($query) use ($outlet_id) {
+        $transactions = TransactionDetail::with(['transaction.paymentMethod', 'product'])
+            ->whereHas('transaction', function ($query) use ($outlet_id) {
                 $query->where('outlet_id', $outlet_id);
             })
             ->get();
