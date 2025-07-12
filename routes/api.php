@@ -75,6 +75,8 @@ Route::middleware('auth:api')->group(function () {
     Route::get('outlets/{outlet}', [OutletController::class, 'show']);
     Route::get('user/current', [UserController::class, 'showCurrentUser']);
     Route::get('absensi', [AbsensiController::class, 'getAllAbsensi']);
+    Route::get('absensi/{user}',[AbsensiController::class, 'getAbsensiByUserId']);
+    Route::get('absensi/current/user',[AbsensiController::class, 'getAbsensiCurrentUser']);
 
 
     Route::group([
